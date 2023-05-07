@@ -4,7 +4,7 @@ import React from 'react'
 const TestComponent = () => {
   return (
     <View>
-      <Text>This is Prescription Folder</Text>
+      <Text>This is Handwritten Prescription Reading</Text>
     </View>
   )
 }
