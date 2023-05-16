@@ -1,15 +1,26 @@
 import React from 'react';
-import { View, ImageBackground, StyleSheet, TouchableOpacity, Text } from 'react-native';
+import { View, ImageBackground, StyleSheet, TouchableOpacity, Text, Image } from 'react-native';
 
-const GetStartedPage = () => {
+
+const GetStartedPage = ({ navigation }) => {
+
+  const handleGetStarted = () => {
+    navigation.navigate('Login Page');
+  };
+
   return (
     <View style={styles.container}>
       <ImageBackground
-        source={require('../../assets/get.jpg')}
+        source={require('../../assets/background.jpg')}
         style={styles.backgroundImage}
       >
+        <View><Image
+          source={require('../../assets/get.jpg')}
+          style={styles.image}
+        /></View>
+
         <TouchableOpacity style={styles.button}>
-          <Text style={styles.buttonText}>Get Started</Text>
+          <Text style={styles.buttonText} onPress={handleGetStarted}>Get Started</Text>
         </TouchableOpacity>
       </ImageBackground>
     </View>
@@ -36,6 +47,12 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  image: {
+    width: 250,
+    height: 250,
+    borderRadius: 130,
+    marginBottom: 10
   },
 });
 
