@@ -3,8 +3,13 @@ import { View, TouchableOpacity, Text, Modal, StyleSheet, Image, Alert, ImageBac
 import { AntDesign } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import Footer from '../Other/Footer';
 
-const ImageUpload = () => {
+const ImageUpload = ({navigation}) => {
+
+  const handleGetStarted = () => {
+    navigation.navigate('Prescription identify Page');
+  };
   const [isCameraVisible, setCameraVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [rotationAngle, setRotationAngle] = useState(0);
@@ -50,37 +55,21 @@ const ImageUpload = () => {
   return (
 
     <ImageBackground
-      source={require('../../assets/doc.jpg')} // Replace with the actual image path
+      source={require('../../assets/background.jpg')} // Replace with the actual image path
       style={styles.backgroundImage}>
-      <View style={styles.appBar}>
-        <TouchableOpacity>
-          <Icon name="bars" size={20} color="#fff" style={styles.icon} />
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <Icon name="search" size={20} color="#fff" style={styles.icon} />
-        </TouchableOpacity>
-        {/* Your app bar content goes here */}
-      </View>
-
-      <View style={styles.bottomBar}>
-
-        <TouchableOpacity>
-          <Icon name="home" size={20} color="#fff" style={styles.icon} />
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <Icon name="bell" size={20} color="#fff" style={styles.icon} />
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <Icon name="user" size={20} color="#fff" style={styles.icon} />
-        </TouchableOpacity>
-      </View>
-
+     
+     <View><Image
+       source={require('../../assets/doc.jpg')}
+          style={styles.image}
+        /></View>
+        <View><Text style={styles.text2}>Prescription Reading</Text></View>
+     
       <View style={styles.container}>
-
+     
         {!isCameraVisible && !selectedImage && (
           <TouchableOpacity onPress={handleCameraPress} style={styles.cameraIconContainer}>
 
-            <AntDesign name="camera" size={100} color="black" borderColor='white' />
+            <AntDesign name="camera" size={100} color="black" borderColor='white'  />
           </TouchableOpacity>
 
         )}
@@ -124,26 +113,24 @@ const ImageUpload = () => {
                 <Text style={styles.buttonText}>Cancel</Text>
               </TouchableOpacity>
 
-
-
               <TouchableOpacity style={styles.rotateIconContainer} onPress={handleRotatePress}>
                 <Icon name="download" size={20} color="#fff" style={{ transform: [{ rotatename: `${rotationAngle}deg` }] }} />
 
               </TouchableOpacity>
 
 
-
-
-
-              <TouchableOpacity style={[styles.button, { backgroundColor: '#1CA369' }]} onPress={handleConfirmPress}>
+              <TouchableOpacity style={[styles.button, { backgroundColor: '#1CA369' }]} onPress={handleGetStarted}>
                 <Text style={styles.buttonText}>Confirm</Text>
               </TouchableOpacity>
 
             </View>
           </View>
+          
         )}
-      </View></ImageBackground>
-
+      
+      </View>
+      <View><Footer></Footer></View>
+      </ImageBackground>
 
   );
 };
@@ -151,8 +138,10 @@ const ImageUpload = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    
+    alignItems:'center'
+    
+   
 
   },
   backgroundImage: {
@@ -162,7 +151,8 @@ const styles = StyleSheet.create({
   },
   cameraIconContainer: {
     position: 'absolute',
-    bottom: 90,
+    bottom: 60,
+    marginTop:20
   },
   popupContainer: {
     flex: 1,
@@ -206,6 +196,13 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
   },
+  text2: {
+    color: 'black',
+    fontSize: 28,
+    fontWeight: 'bold',
+   alignItems:'center',
+   marginLeft:40
+  },
   selectedImageContainer: {
 
     justifyContent: 'flex-start',
@@ -213,8 +210,8 @@ const styles = StyleSheet.create({
 
   },
   selectedImage: {
-    width: 300,
-    height: 300,
+    width: 250,
+    height: 250,
     borderColor: 'white',
     borderRadius: 10,
     borderWidth: 2,
@@ -232,7 +229,7 @@ const styles = StyleSheet.create({
 
   },
   rotateIconContainer: {
-    backgroundColor: 'blue',
+    backgroundColor: '#C43D56',
     padding: 8,
     marginVertical: 8,
     borderRadius: 5,
@@ -243,31 +240,16 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
   },
-  appBar: {
-    position: 'absolute',
-    top: 0,
-    left: 0, right: 0,
-    height: 60,
-    backgroundColor: '#0E9F56',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 10,
-  },
-  bottomBar: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 60,
-    backgroundColor: '#0E9F56',
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    paddingHorizontal: 10,
-  },
-  icon: {
-    marginHorizontal: 10,
+  image: {
+    width: 250,
+    height: 150,
+    marginLeft:50,
+    marginRight:100,
+    marginTop:20,
+    borderRadius:70,
+    marginBottom:30,
+    borderColor:'white'
+   
   },
 });
 

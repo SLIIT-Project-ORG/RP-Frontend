@@ -1,170 +1,164 @@
 import React, { useState, useRef } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, ImageBackground, TouchableOpacity, ScrollView ,Card } from 'react-native';
+import { Button } from 'react-native-paper';
+import Icon from 'react-native-vector-icons/FontAwesome';
 import { Audio } from 'expo-av';
+import Footer from '../Other/Footer';
 
-export default function ChatScreen() {
+const ChatScreen = () => {
   const [isRecording, setIsRecording] = useState(false);
-  const [recordedAudio, setRecordedAudio] = useState(null);
-  const recording = useRef(null);
+  const [audioUri, setAudioUri] = useState(null);
+  const [audioPlayer, setAudioPlayer] = useState(null);
 
   const startRecording = async () => {
     try {
-      await Audio.requestPermissionsAsync();
-      await Audio.setAudioModeAsync({
-        allowsRecordingIOS: true,
-        playsInSilentModeIOS: true,
-      });
-
-      const recordingOptions = {
-        android: {
-          extension: '.m4a',
-          outputFormat: Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_MPEG_4,
-          audioEncoder: Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_AAC,
-          sampleRate: 44100,
-          numberOfChannels: 2,
-          bitRate: 128000,
-        },
-        ios: {
-          extension: '.m4a',
-          outputFormat: Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4AAC,
-          audioQuality: Audio.RECORDING_OPTION_IOS_AUDIO_QUALITY_HIGH,
-          sampleRate: 44100,
-          numberOfChannels: 2,
-          bitRate: 128000,
-          linearPCMBitDepth: 16,
-          linearPCMIsBigEndian: false,
-          linearPCMIsFloat: false,
-        },
-      };
-
-      const newRecording = new Audio.Recording();
-      await newRecording.prepareToRecordAsync(recordingOptions);
-      await newRecording.startAsync();
+      const recording = new Audio.Recording();
+      await recording.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY);
+      await recording.startAsync();
       setIsRecording(true);
-      recording.current = newRecording;
+      setAudioPlayer(recording);
     } catch (error) {
-      console.error('Failed to start recording', error);
+      console.log('Error starting recording:', error);
     }
   };
 
   const stopRecording = async () => {
     try {
-      await recording.current.stopAndUnloadAsync();
-      const uri = recording.current.getURI();
+      await audioPlayer.stopAndUnloadAsync();
+      const uri = audioPlayer.getURI();
       setIsRecording(false);
-      setRecordedAudio(uri);
+      setAudioUri(uri);
     } catch (error) {
-      console.error('Failed to stop recording', error);
+      console.log('Error stopping recording:', error);
     }
   };
 
-  const playRecordedAudio = async () => {
+  const playAudio = async () => {
     try {
-      const soundObject = new Audio.Sound();
-      await soundObject.loadAsync({ uri: recordedAudio });
-      await soundObject.playAsync();
+      const sound = new Audio.Sound();
+      await sound.loadAsync({ uri: audioUri });
+      await sound.playAsync();
     } catch (error) {
-      console.error('Failed to play recorded audio', error);
+      console.log('Error playing audio:', error);
     }
   };
 
   return (
-    <View style={styles.container}>
-      {/* App Bar */}
-      <View style={styles.appBar}>
-        <Text style={styles.appBarText}>My App</Text>
-      </View>
+    <ImageBackground
+      source={require('../../assets/background.jpg')}
+      style={styles.backgroundImage}
+    >
+     
+      
 
-      {/* Voice Record Option Bar */}
-      <View style={styles.voiceRecordBar}>
-        <TouchableOpacity
-          style={styles.recordButton}
-          onPress={isRecording ? stopRecording : startRecording}
-        >
-          <Text style={styles.recordButtonText}>{isRecording ? 'Stop' : 'Record'}</Text>
-        </TouchableOpacity>
-      </View>
+      <ScrollView contentContainerStyle={styles.container}>
+        {/* Display the chat messages here */}
+        {audioUri && (
+          <TouchableOpacity onPress={playAudio} style={styles.audioMessage}>
+            <Icon name="play" size={20} color="#000" style={styles.icon} />
+            <Text style={styles.cardText}>   Voice Message  </Text>
+            
+          </TouchableOpacity>
+        )}
+        <View style={styles.card}><Text style={styles.text} ></Text></View>
+      </ScrollView>
 
-      {/* Bottom Bar */}
-      <View style={styles.bottomBar}>
-        <TouchableOpacity
-          style={styles.playButton}
-          onPress={playRecordedAudio}
-          disabled={!recordedAudio}
-        >
-          <Text style={styles.playButtonText}>Play Recorded Audio</Text>
-        </TouchableOpacity>
+      {/* Voice chat interface */}
+      <View style={styles.voiceChat}>
+        {isRecording ? (
+          <TouchableOpacity onPress={stopRecording} style={styles.recordButton}>
+            <Icon name="stop" size={30} color="black" style={styles.icon} />
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity onPress={startRecording} style={styles.recordButton}>
+            <Icon name="microphone" size={30} color="white" style={styles.icon} />
+          </TouchableOpacity>
+        )}
       </View>
-    </View>
+      <View><Footer></Footer></View>
+    </ImageBackground>
   );
-}
+};
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: '#fff',
-    },
-    appBar: {
-      height: 60,
-      backgroundColor: '#333',
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    appBarText: {
-      color: '#fff',
-      fontSize: 18,
-      fontWeight: 'bold',
-    },
-    voiceRecordBar: {
-      height: 100,
-      backgroundColor: '#f2f2f2',
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    recordButton: {
-      width: 150,
-      height: 50,
-      backgroundColor: '#f00',
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    recordButtonText: {
-      color: '#fff',
-      fontSize: 16,
-      fontWeight: 'bold',
-    },
-    bottomBar: {
-      height: 100,
-      backgroundColor: '#f2f2f2',
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    playButton: {
-      width: 200,
-      height: 50,
-      backgroundColor: '#00f',
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    playButtonText: {
-      color: '#fff',
-      fontSize: 16,
-      fontWeight: 'bold',
-    },
-  });
+  container: {
+    flex: 1,
+    alignItems:    'center',
+    justifyContent: 'center',
+    color:'white'
+  },
+  backgroundImage: {
+    flex: 1,
+    resizeMode: 'center',
+  },
+  card:{
+
+    height:100,
+    width:'70%',
+    backgroundColor:'white',
+    borderColor:'lightblue',
+    borderRadius:10,
+    borderWidth:2
+  },
   
-  
-  
+  cardText: {
+    fontSize: 16,
+    fontWeight: 'semibold',
+    alignItems: 'center',
+    justifyContent: 'center',
+    color: 'black',
+  },
+  button: {
+    backgroundColor: 'black',
+    height: 40,
+   
+  },
+  text:{
+    color:'black',
+    justifyContent:'center',
+    fontSize:15,
+    fontWeight:'semibold',
+    alignItems:'center'
+  },
 
+  audioMessage: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+    height:30,
+    backgroundColor:'lightgreen',
+    padding:30,
+    borderColor:'black',
+    width:'70%',
+    borderRadius:10,
+    justifyContent: 'space-between',
+    
+  },
+  voiceChat: {
+    position: 'absolute',
+    bottom: 80,
+    left: 0,
+    right: 0,
+    height: 60,
+   
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+  },
+  recordButton: {
+    backgroundColor: '#C43D56',
+    borderRadius: 30,
+    padding: 20,
+    marginTop:10,
+    
+  },
+  icon: {
+    marginLeft: 5,
+    marginRight: 5,
+    justifyContent:'space-between'
+  },
+});
 
+export default ChatScreen;
 
-
-
-
-
-
-
-
-
-
-  
